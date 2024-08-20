@@ -1,18 +1,22 @@
 [tool.poetry]
 name = "manim-circuit"
 version = "0.0.1"
-description = "A manim-plugin that adds customized Mobject and VMobject(s) to visual electrical components"
-authors = ["Mr-FuzzyPenguin rubikscubeworld2014@gmail.com"]
+description = "A manim-plugin that adds custom circuit VMobject(s)"
+authors = ["Mr-FuzzyPenguin <rubikscubeworld2014@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://example.com"
-repository = "https://example.com"
+homepage = "https://github.com/Mr-FuzzyPenguin/manim-circuit"
+repository = "https://github.com/Mr-FuzzyPenguin/manim-circuit"
 keywords = ["manim", "plugins", "circuit"]
 packages = [{include = "manim_circuit", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.6.2"
-manim = ">=0.3"
+python = ">=3.9,<3.13"
+manim = ">=0.18"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+pylint = "*"
 
 [tool.poetry.plugins."manim.plugins"]
 "manim_circuit" = "manim_circuit"
