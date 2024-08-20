@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "manim-circuit"
+version = "0.0.1"
+description = "A manim-plugin that adds customized Mobject and VMobject(s) to visual electrical components"
+authors = ["Mr-FuzzyPenguin rubikscubeworld2014@gmail.com"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://example.com"
+repository = "https://example.com"
+keywords = ["manim", "plugins", "circuit"]
+packages = [{include = "manim_circuit", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+manim = ">=0.3"
+
+[tool.poetry.plugins."manim.plugins"]
+"manim_circuit" = "manim_circuit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
