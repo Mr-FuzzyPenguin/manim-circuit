@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim-circuit"
-version = "0.0.1"
+version = "0.0.2"
 description = "A manim-plugin that adds custom circuit VMobject(s)"
 authors = ["Mr-FuzzyPenguin <rubikscubeworld2014@gmail.com>"]
 license = "MIT"

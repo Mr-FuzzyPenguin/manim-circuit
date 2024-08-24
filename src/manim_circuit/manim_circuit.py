@@ -16,13 +16,7 @@ class Inductor(VMobject):
             .center()
         )
 
-        # Inaccessible to outside.
-        self._plots = VGroup(
-            Dot(self.main_body.get_left()).set_opacity(0),
-            Dot(self.main_body.get_right()).set_opacity(0),
-        )
-
-        self.add(self.main_body, self._plots)
+        self.add(self.main_body)
 
         # check if lebel is present.
         if not label is None:
@@ -32,14 +26,17 @@ class Inductor(VMobject):
                 .next_to(self.main_body, self._direction, buff=0.1)
             )
             self.add(self.label)
+        else:
+            self.label = None
+
+    def get_anchors(self):
+        return [self.main_body.get_start(), self.main_body.get_end()]
 
     def get_terminals(self, val):
-        terminals = {
-            "left": self._plots[0].get_center(),
-            "right": self._plots[1].get_center(),
-        }
-
-        return terminals[val]
+        if val == "left":
+            return self.main_body.get_start()
+        elif val == "right":
+            return self.main_body.get_end()
 
     def center(self):
         self.shift(
@@ -89,13 +86,7 @@ class Resistor(VMobject):
             .center()
         )
 
-        # Inaccessible to outside.
-        self._plots = VGroup(
-            Dot(self.main_body.get_left()).set_opacity(0),
-            Dot(self.main_body.get_right()).set_opacity(0),
-        )
-
-        self.add(self.main_body, self._plots)
+        self.add(self.main_body)
 
         # check if lebel is present.
         if not label is None:
@@ -105,14 +96,17 @@ class Resistor(VMobject):
                 .next_to(self.main_body, self._direction, buff=0.1)
             )
             self.add(self.label)
+        else:
+            self.label = None
+
+    def get_anchors(self):
+        return [self.main_body.get_start(), self.main_body.get_end()]
 
     def get_terminals(self, val):
-        terminals = {
-            "left": self._plots[0].get_center(),
-            "right": self._plots[1].get_center(),
-        }
-
-        return terminals[val]
+        if val == "left":
+            return self.main_body.get_start()
+        elif val == "right":
+            return self.main_body.get_end()
 
     def center(self):
         self.shift(
@@ -136,9 +130,7 @@ class Capacitor(VMobject):
         self._direction = direction
 
         self.main_body = VGroup(
-            Line([-4.15 / 4.2874, 0, 0], [(7 / 4.42) - 0.125, 0, 0]),
             Line([(7 / 4.42) - 0.125, 1, 0], [(7 / 4.42) - 0.125, -1, 0]),
-            Line([(7 / 4.42) + 0.125, 0, 0], [17.73 / 4.2874, 0, 0]),
         )
 
         # not polarized:
@@ -158,30 +150,22 @@ class Capacitor(VMobject):
 
         self.main_body.scale(0.25).center()
 
-        # Inaccessible to outside.
-        self._plots = VGroup(
-            Dot(self.main_body.get_left()).set_opacity(0),
-            Dot(self.main_body.get_right()).set_opacity(0),
-        )
-
-        self.add(self.main_body, self._plots)
+        self.add(self.main_body)
 
         # check if lebel is present.
         if not label is None:
             self.label = (
-                Tex(str(label) + " F")
+                Tex(str(label) + "F")
                 .scale(0.5)
                 .next_to(self.main_body, self._direction, buff=0.1)
             )
             self.add(self.label)
 
     def get_terminals(self, val):
-        terminals = {
-            "left": self._plots[0].get_center(),
-            "right": self._plots[1].get_center(),
-        }
-
-        return terminals[val]
+        if val == "left":
+            return self.main_body[0].get_midpoint()
+        elif val == "right":
+            return self.main_body[1].get_midpoint()
 
     def center(self):
         self.shift(
@@ -204,7 +188,7 @@ class Ground(VMobject):
         super().__init__(**kwargs)
 
         if ground_type == "ground":
-            self.main_body = Polygon([0, 0, 0], [1, -1, 0], [2, 0, 0])
+            self.main_body = VGroup(Polygon([0, 0, 0], [2, 0, 0], [1, -1, 0]))
             if not label is None and label == "D" or label == "A":
                 self.main_body.add(Text(label).move_to(self.main_body))
                 # 'D' or 'A' for digital vs analog ground
@@ -218,7 +202,6 @@ class Ground(VMobject):
             )
 
         # tail for ground:
-        self.main_body.add(Line([1, 0, 0], [1, 1, 0]))
         self.add(self.main_body)
 
         # Scale down to match the scale of other electrical mobjects
@@ -227,12 +210,11 @@ class Ground(VMobject):
 
         self.main_body.center().scale(0.25).center()
 
-        # Inaccessible to outside.
-        self._plot = Dot(self.get_top()).set_opacity(0)
-        self.add(self._plot)
-
-    def get_terminals(self):
-        return self._plot.get_center()
+    def get_terminals(self, *args):
+        if len(self.main_body) != 3:
+            return self.main_body[0].point_from_proportion(1 / (2 + 2 * np.sqrt(2)))
+        else:
+            return self.main_body[0].point_from_proportion(0.5)
 
 
 class Opamp(VMobject):
@@ -367,17 +349,14 @@ class VoltageSource(VMobject):
                 Square().set_stroke(WHITE).rotate(45 * DEGREES).scale(1 / np.sqrt(2))
             )
 
+        # + and -
         self.main_body.add(Line(DOWN * 0.3, UP * 0.3).shift(UP * 0.5))
         self.main_body.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(UP * 0.5))
         self.main_body.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(DOWN * 0.5))
 
         self.main_body.scale(0.5)
 
-        self._plots = VGroup(
-            Dot(self.main_body.get_top()), Dot(self.main_body.get_bottom())
-        ).set_opacity(0)
-
-        self.add(self.main_body, self._plots)
+        self.add(self.main_body)
 
         if label:
             self.label = (
@@ -390,12 +369,10 @@ class VoltageSource(VMobject):
             self.label = None
 
     def get_terminals(self, val):
-        terminals = {
-            "positive": self._plots[0].get_center(),
-            "negative": self._plots[1].get_center(),
-        }
-
-        return terminals[val]
+        if val == "positive":
+            return self.main_body[0].point_from_proportion(0.25)
+        elif val == "negative":
+            return self.main_body[0].point_from_proportion(0.75)
 
     def center(self):
         self.shift(
@@ -445,11 +422,7 @@ class CurrentSource(VMobject):
 
         self.main_body.scale(0.5)
 
-        self._plots = VGroup(
-            Dot(self.main_body.get_top()), Dot(self.main_body.get_bottom())
-        ).set_opacity(0)
-
-        self.add(self.main_body, self._plots)
+        self.add(self.main_body)
 
         if label:
             self.label = (
@@ -460,12 +433,10 @@ class CurrentSource(VMobject):
             self.add(self.label)
 
     def get_terminals(self, val):
-        terminals = {
-            "positive": self._plots[0].get_center(),
-            "negative": self._plots[1].get_center(),
-        }
-
-        return terminals[val]
+        if val == "positive":
+            return self.main_body[0].point_from_proportion(0.25)
+        elif val == "negative":
+            return self.main_body[0].point_from_proportion(0.75)
 
     def center(self):
         self.shift(
