@@ -334,8 +334,17 @@ class Opamp(VMobject):
         return self._terminals[val]
 
 
-class VoltageSource(VMobject):
-    def __init__(self, value=1, label=True, direction=LEFT, dependent=False, **kwargs):
+class Source(VMobject):
+    def __init__(
+        self,
+        mobject_group,
+        letter,
+        value,
+        label=True,
+        direction=LEFT,
+        dependent=False,
+        **kwargs,
+    ):
         # initialize the vmobject
         super().__init__(**kwargs)
         self._direction = direction
@@ -349,18 +358,16 @@ class VoltageSource(VMobject):
                 Square().set_stroke(WHITE).rotate(45 * DEGREES).scale(1 / np.sqrt(2))
             )
 
-        # + and -
-        self.main_body.add(Line(DOWN * 0.3, UP * 0.3).shift(UP * 0.5))
-        self.main_body.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(UP * 0.5))
-        self.main_body.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(DOWN * 0.5))
+        # Add the middle symbols first
+        self.add(mobject_group.scale(0.5))
 
+        # scale it down first and then add it onto the VMobject
         self.main_body.scale(0.5)
-
         self.add(self.main_body)
 
         if label:
             self.label = (
-                MathTex(str(value) + r"\text{ V}")
+                MathTex(str(value) + r"\text{ " + letter + "}")
                 .scale(0.5)
                 .next_to(self.main_body, self._direction, buff=0.1)
             )
@@ -369,74 +376,15 @@ class VoltageSource(VMobject):
             self.label = None
 
     def get_terminals(self, val):
-        if val == "positive":
-            return self.main_body[0].point_from_proportion(0.25)
-        elif val == "negative":
-            return self.main_body[0].point_from_proportion(0.75)
-
-    def center(self):
-        self.shift(
-            DOWN * self.main_body.get_center()[1] + LEFT * self.main_body.get_center()
-        )
-
-        return self
-
-    def rotate(self, angle, *args, **kwargs):
-        super().rotate(angle, about_point=self.main_body.get_center(), *args, **kwargs)
-        if not self.label == None:
-            self.label.rotate(-angle).next_to(self.main_body, self._direction, buff=0.1)
-
-        return self
-
-    def center(self):
-        self.shift(
-            DOWN * self.main_body.get_center()[1] + LEFT * self.main_body.get_center()
-        )
-
-        return self
-
-    def rotate(self, angle, *args, **kwargs):
-        super().rotate(angle, about_point=self.main_body.get_center(), *args, **kwargs)
-        if not self.label == None:
-            self.label.rotate(-angle).next_to(self.main_body, self._direction, buff=0.1)
-
-        return self
-
-
-class CurrentSource(VMobject):
-    def __init__(self, value=1, label=True, direction=LEFT, dependent=False, **kwargs):
-        # initialize the vmobject
-        super().__init__(**kwargs)
-        self._direction = direction
-
-        if dependent is True or type(value) is int or type(value) is float:
-            self.main_body = VGroup(
-                Circle().set_stroke(WHITE),
-            )
+        if type(self.main_body) is Circle:
+            proportion_offset = 0
         else:
-            self.main_body = VGroup(
-                Square().set_stroke(WHITE).rotate(45 * DEGREES).scale(1 / np.sqrt(2))
-            )
+            proportion_offset = -0.25
 
-        self.main_body.add(Line(DOWN * 0.75, UP * 0.75).add_tip(tip_shape=StealthTip))
-
-        self.main_body.scale(0.5)
-
-        self.add(self.main_body)
-
-        if label:
-            self.label = (
-                MathTex(str(value) + r"\text{ A}")
-                .scale(0.5)
-                .next_to(self.main_body, self._direction, buff=0.1)
-            )
-            self.add(self.label)
-
-    def get_terminals(self, val):
         if val == "positive":
-            return self.main_body[0].point_from_proportion(0.25)
+            return self.main_body[0].point_from_proportion(0.25 + proportion_offset)
         elif val == "negative":
-            return self.main_body[0].point_from_proportion(0.75)
+            return self.main_body[0].point_from_proportion(0.75 + proportion_offset)
 
     def center(self):
         self.shift(
@@ -451,6 +399,24 @@ class CurrentSource(VMobject):
             self.label.rotate(-angle).next_to(self.main_body, self._direction, buff=0.1)
 
         return self
+
+
+class VoltageSource(Source):
+    def __init__(self, value=1, label=True, direction=LEFT, dependent=False, **kwargs):
+        # + and -
+        markings = VGroup()
+        markings.add(Line(DOWN * 0.3, UP * 0.3).shift(UP * 0.5))
+        markings.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(UP * 0.5))
+        markings.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(DOWN * 0.5))
+
+        super().__init__(markings, letter="V", value=value, **kwargs)
+
+
+class CurrentSource(Source):
+    def __init__(self, value=1, label=True, direction=LEFT, dependent=False, **kwargs):
+        # Arrow
+        markings = Line(DOWN * 0.75, UP * 0.75).add_tip(tip_shape=StealthTip)
+        super().__init__(markings, letter="A", value=value, **kwargs)
 
 
 class Circuit(VMobject):
