@@ -1,4 +1,5 @@
 from manim import *
+import math
 
 
 class Inductor(VMobject):
@@ -342,28 +343,26 @@ class Source(VMobject):
         value,
         label=True,
         direction=LEFT,
-        dependent=False,
+        dependent=True,
         **kwargs,
     ):
         # initialize the vmobject
         super().__init__(**kwargs)
         self._direction = direction
 
-        if dependent is True or type(value) is int or type(value) is float:
-            self.main_body = VGroup(
-                Circle().set_stroke(WHITE),
-            )
+        # If value is a number or override dependent is False
+        if dependent is False or type(value) is int or type(value) is float:
+            self.main_body = Circle().set_stroke(WHITE)
         else:
-            self.main_body = VGroup(
+            self.main_body = (
                 Square().set_stroke(WHITE).rotate(45 * DEGREES).scale(1 / np.sqrt(2))
             )
 
-        # Add the middle symbols first
-        self.add(mobject_group.scale(0.5))
+        # Add the scaled symbols first
+        self.add(mobject_group.scale(0.5, about_point=self.main_body.get_center()))
 
-        # scale it down first and then add it onto the VMobject
-        self.main_body.scale(0.5)
-        self.add(self.main_body)
+        # Scale it down first and then add it onto the VMobject
+        self.add(self.main_body.scale(0.5))
 
         if label:
             self.label = (
@@ -402,21 +401,25 @@ class Source(VMobject):
 
 
 class VoltageSource(Source):
-    def __init__(self, value=1, label=True, direction=LEFT, dependent=False, **kwargs):
+    def __init__(self, value=1, label=True, direction=LEFT, dependent=True, **kwargs):
         # + and -
         markings = VGroup()
         markings.add(Line(DOWN * 0.3, UP * 0.3).shift(UP * 0.5))
         markings.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(UP * 0.5))
         markings.add(Line(LEFT * 0.3, RIGHT * 0.3).shift(DOWN * 0.5))
 
-        super().__init__(markings, letter="V", value=value, **kwargs)
+        super().__init__(
+            markings, letter="V", value=value, dependent=dependent, **kwargs
+        )
 
 
 class CurrentSource(Source):
-    def __init__(self, value=1, label=True, direction=LEFT, dependent=False, **kwargs):
+    def __init__(self, value=1, label=True, direction=LEFT, dependent=True, **kwargs):
         # Arrow
         markings = Line(DOWN * 0.75, UP * 0.75).add_tip(tip_shape=StealthTip)
-        super().__init__(markings, letter="A", value=value, **kwargs)
+        super().__init__(
+            markings, letter="A", value=value, dependent=dependent, **kwargs
+        )
 
 
 class Circuit(VMobject):
@@ -439,9 +442,6 @@ class Circuit(VMobject):
         for component in args:
             self.component_list.add(component)
 
-    # line_intersection annoyingly (but true to its name),
-    # will get the intersection between two lines. NOT segments
-    # which is unfortunate, considering that's what "wires" are.
     def validate_line_intersection(self, l1, l2):
         try:
             preliminary_result = line_intersection(l1, l2)
@@ -458,55 +458,93 @@ class Circuit(VMobject):
         y_range2 = [l2[0][1], l2[1][1]]
         y_range2.sort()
 
+        tolerance = 1e-4
+
         # TODO In the future, ideally a different implementation that's
         # a bit more mathematical, (and less brute-force) will be used
         if (
             (
                 (
                     x_range1[1] > preliminary_result[0]
-                    or np.allclose([preliminary_result[0]], [x_range1[1]])
+                    or math.isclose(
+                        preliminary_result[0],
+                        x_range1[1],
+                        rel_tol=tolerance,
+                    )
                 )
                 and (
                     preliminary_result[0] > x_range1[0]
-                    or np.allclose([preliminary_result[0]], [x_range1[0]])
+                    or math.isclose(
+                        preliminary_result[0],
+                        x_range1[0],
+                        rel_tol=tolerance,
+                    )
                 )
             )
             and (
                 (
                     x_range2[1] > preliminary_result[0]
-                    or np.allclose([preliminary_result[0]], [x_range2[1]])
+                    or math.isclose(
+                        preliminary_result[0],
+                        x_range2[1],
+                        rel_tol=tolerance,
+                    )
                 )
                 and (
                     preliminary_result[0] > x_range2[0]
-                    or np.allclose([preliminary_result[0]], [x_range2[0]])
+                    or math.isclose(
+                        preliminary_result[0],
+                        x_range2[0],
+                        rel_tol=tolerance,
+                    )
                 )
             )
             and (
                 (
                     y_range1[1] > preliminary_result[1]
-                    or np.allclose([preliminary_result[1]], [y_range1[1]])
+                    or math.isclose(
+                        preliminary_result[1],
+                        y_range1[1],
+                        rel_tol=tolerance,
+                    )
                 )
                 and (
                     preliminary_result[1] > y_range1[0]
-                    or np.allclose([preliminary_result[1]], [y_range1[0]])
+                    or math.isclose(
+                        preliminary_result[1],
+                        y_range1[0],
+                        rel_tol=tolerance,
+                    )
                 )
             )
             and (
                 (
                     y_range2[1] > preliminary_result[1]
-                    or np.allclose([y_range2[1]], [preliminary_result[1]])
+                    or math.isclose(
+                        y_range2[1],
+                        preliminary_result[1],
+                        rel_tol=tolerance,
+                    )
                 )
                 and (
                     preliminary_result[1] > y_range2[0]
-                    or np.allclose([preliminary_result[1]], [y_range2[0]])
+                    or math.isclose(
+                        preliminary_result[1],
+                        y_range2[0],
+                        rel_tol=tolerance,
+                    )
                 )
             )
             # Check if the intersection lies on one of the ends
             and (
-                np.allclose(l1[0], preliminary_result)
-                or np.allclose(l1[1], preliminary_result)
-                or np.allclose(l2[0], preliminary_result)
-                or np.allclose(l2[1], preliminary_result)
+                np.allclose(
+                    l1[0],
+                    preliminary_result,
+                    rtol=tolerance,
+                )
+                or np.allclose(l1[1], preliminary_result, rtol=tolerance)
+                or np.allclose(l2[0], preliminary_result, rtol=tolerance)
+                or np.allclose(l2[1], preliminary_result, rtol=tolerance)
             )
         ):
             return preliminary_result
@@ -533,7 +571,8 @@ class Circuit(VMobject):
                 # NOTE type(wire) == VMobject
                 for wire in node.line_wires:
                     intersect = self.validate_line_intersection(
-                        [end1, end2], wire.get_anchors()
+                        [end1, end2],
+                        wire.get_anchors(),
                     )
 
                     # Found intersection.
