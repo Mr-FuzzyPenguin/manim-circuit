@@ -15,21 +15,23 @@ This library is written for ManimCE, not ManimGL. Additionally, there are more r
 
 ### Inspiration
 [Why I made this library](STORY.md)
-## Roadmap
-- [X] Make this my first open-source package that I, FuzzyPenguin (online alias: Pete Aptenodyte Forsteri) will maintain.
-- [ ] Release this to Pypi
-- [X] Make this a manim-plugin named manim-circuit
-- [ ] Add all of the circuit elements that were used in our class
+## Roadmap/To-Do
+- [ ] Add transistors 
 - [ ] Use this library for AT LEAST one of my future videos whatever it may be\*
-- [ ] Clean up the Code
-- [X] Maybe make a Circuit `Mobject` in order to help with circuit analysis
+- [ ] Prettify by using VMobjects, and make the point selection more accurate.
 - [ ] If I have time, make logic gates too
+## Completed
+- [X] Make this my first open-source package that I, FuzzyPenguin (online alias: Pete Aptenodyte Forsteri) will maintain.
+- [X] Release this to Pypi
+- [X] Make this a manim-plugin named manim-circuit
+- [X] Clean up the Code
+- [X] Maybe make a Circuit `Mobject` in order to help with circuit analysis
+
 
 
 \*Most likely Circuit Analysis using Laplace Transform for a pure Manim-based animation video
 ## Documentation
 
-Please note, this is a WIP: More things will be added as Development continues.
 `Resistor()`, `Inductor()`, `Capacitor()`, supports labels. For example:
 `Inductor(label="0.3", direction=UP)` will make a 0.3 H inductor with a label on the top.
 
