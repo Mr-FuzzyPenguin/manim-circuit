@@ -92,32 +92,22 @@ class Resistor(VMobject):
         super().__init__(**kwargs)
         self._direction = direction
 
-        self.main_body = (
-            # TODO This parametric function, although stolen directly from Desmos is
-            # unfortunately formatted badly. Considering using something else besides
-            # ParametricFunction(s) to make Resistors.
-            ParametricFunction(
-                (
-                    lambda t: (
-                        t,
-                        (
-                            2
-                            * np.arcsin(
-                                np.sin(
-                                    (25.7244 * PI * t + 11.64 * PI) / 21.88
-                                    + (13.26 * PI) / 21.88
-                                )
-                            )
-                            / PI
-                        ),
-                        0,
-                    )
-                ),
-                t_range=(-4.15 / (2.21 * 1.94), 17.73 / 4.2874),
-            )
-            .scale(0.25)
-            .center()
-        )
+        # Less points, more cleaner!
+        self.main_body = VMobject()
+        points = [
+            [-0.96795, 0, 0],
+            [-0.54268, 1, 0],
+            [0.30788, -1, 0],
+            [1.15843, 1, 0],
+            [2.00899, -1, 0],
+            [2.85954, 1, 0],
+            [3.7101, -1, 0],
+            [4.13537, 0, 0],
+        ]
+        self.main_body.start_new_path(points[0])
+        for i in points[1:]:
+            self.main_body.add_line_to(i)
+        self.main_body.scale(0.25).center()
 
         self.add(self.main_body)
 
