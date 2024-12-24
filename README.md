@@ -17,7 +17,6 @@ This library is written for ManimCE, not ManimGL. Additionally, there are more r
 [Why I made this library](STORY.md)
 ## Roadmap/To-Do
 - [ ] Add transistors 
-- [ ] Use this library for AT LEAST one of my future videos whatever it may be\*
 - [ ] Prettify by using VMobjects, and make the point selection more accurate.
 - [ ] If I have time, make logic gates too
 ## Completed
@@ -25,11 +24,13 @@ This library is written for ManimCE, not ManimGL. Additionally, there are more r
 - [X] Release this to Pypi
 - [X] Make this a manim-plugin named manim-circuit
 - [X] Clean up the Code
+- [X] Optimized Resistors, partially prettified.
 - [X] Maybe make a Circuit `Mobject` in order to help with circuit analysis
+- [X] Use this library for AT LEAST one of my future videos whatever it may be\*
 
 
+\*Supernode Analysis. Unfortunately, the code for this is not published, as I was using ManimGL, and a local fork of manim-circuit to make it compatible with ManimGL. The video is [here](https://youtu.be/6Xl9zHn8ibs) if you want some inspiration/ideas as to what you could use this library for! I might consider releasing the source code if enough people show interest, but I don't have the time to write a proper disclaimer and make it compatible with ManimCE. I would love to put it in [examples/](examples/) in the near future though. Leave some comments on the video if you're interested!
 
-\*Most likely Circuit Analysis using Laplace Transform for a pure Manim-based animation video
 ## Documentation
 
 `Resistor()`, `Inductor()`, `Capacitor()`, supports labels. For example:
