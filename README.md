@@ -17,14 +17,14 @@ This library is written for ManimCE, not ManimGL. Additionally, there are more r
 [Why I made this library](STORY.md)
 ## Roadmap/To-Do
 - [ ] Add transistors 
-- [ ] Prettify by using VMobjects, and make the point selection more accurate.
 - [ ] If I have time, make logic gates too
 ## Completed
 - [X] Make this my first open-source package that I, FuzzyPenguin (online alias: Pete Aptenodyte Forsteri) will maintain.
 - [X] Release this to Pypi
 - [X] Make this a manim-plugin named manim-circuit
 - [X] Clean up the Code
-- [X] Optimized Resistors, partially prettified.
+- [X] Prettify by using VMobjects, and make the point selection more accurate.
+- [X] Optimized Resistors, fully prettified.
 - [X] Maybe make a Circuit `Mobject` in order to help with circuit analysis
 - [X] Use this library for AT LEAST one of my future videos whatever it may be\*
 
