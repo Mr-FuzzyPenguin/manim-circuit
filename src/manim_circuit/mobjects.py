@@ -106,7 +106,7 @@ class Resistor(VMobject):
         ]
         self.main_body.start_new_path(points[0])
         for i in points[1:]:
-            self.main_body.add_line_to(i)
+            self.main_body.add_line_to(np.array(i))
         self.main_body.scale(0.25).center()
 
         self.add(self.main_body)
